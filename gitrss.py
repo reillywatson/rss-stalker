@@ -44,7 +44,7 @@ def format_feed(repoName):
 def format_commit(commit):
 	files = []
 	for f in commit['files']:
-		files.append('%s %s' % (f['status'], f['filename']))
+		files.append('%s %s (%s)' % (f['status'][0].upper(), f['filename'], f['changes']))
 	return dict(
 		title=commit['commit']['message'],
 		link=commit['url'].replace('api/v3/repos/', '').replace('commits', 'commit'),
