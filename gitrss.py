@@ -5,10 +5,12 @@ import feedgenerator
 import datetime
 import dateutil.parser
 import sys
+import time
 
 # you probably want to change these 2 lines
 token = '3e2d13b44b7feb3a5ffd15bc9b981f90e8254314'
 baseUrl = 'http://172.18.0.147/api/v3'
+msBetweenRequests = 500
 
 def get_forks(repoName):
 	return [a['full_name'] for a in json.loads(requests.get('%s/repos/%s/forks?access_token=%s'%(baseUrl,repoName,token)).content)]
@@ -66,6 +68,8 @@ def update_feed(repo, lastUpdated, outPath):
 			commitlist = get_commits(fork, branch[1], lastUpdated)
 			for c in commitlist:
 				commits.append(get_commit(fork, c))
+				time.sleep(msBetweenRequests / 1000.0)
+			time.sleep(msBetweenRequests / 1000.0)
 	feed = feedgenerator.DefaultFeed(**format_feed(repo))
 	commits = [a for a in commits if 'files' in a]
 	commits = remove_dupes(commits)
