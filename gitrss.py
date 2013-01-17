@@ -11,6 +11,7 @@ import time
 token = '3e2d13b44b7feb3a5ffd15bc9b981f90e8254314'
 baseUrl = 'http://172.18.0.147/api/v3'
 msBetweenRequests = 500
+daysToPull = 4
 
 def get_forks(repoName):
 	return [a['full_name'] for a in json.loads(requests.get('%s/repos/%s/forks?access_token=%s'%(baseUrl,repoName,token)).content)]
@@ -78,7 +79,7 @@ def update_feed(repo, lastUpdated, outPath):
 	f = open(outPath, 'w')
 	f.write(feed.writeString('utf-8'))
 
-oneweekago = datetime.datetime.now() - datetime.timedelta(7)
+oneweekago = datetime.datetime.now() - datetime.timedelta(daysToPull)
 if len(sys.argv) != 3:
 	print 'usage: gitrss repoName outPath'
 else:
