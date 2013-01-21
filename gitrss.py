@@ -29,6 +29,7 @@ def get_commit(repoName, sha):
 def remove_dupes(commits):
 	shas = set()
 	result = []
+	commits = sorted(commits, key=lambda a: a['commit']['author']['date'])
 	for c in commits:
 		sha = c['sha']
 		if sha not in shas:
