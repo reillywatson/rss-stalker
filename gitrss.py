@@ -93,7 +93,7 @@ def update_feed(repo, lastUpdated, outPath):
 	if new != current:
 		f = open(outPath, 'w')
 		f.write(feed.writeString('utf-8'))
-	print 'done: %s' % datetime.time(datetime.now())
+	print 'done: %s' % datetime.datetime.now().time()
 
 while True:
 	oneweekago = datetime.datetime.now() - datetime.timedelta(daysToPull)
