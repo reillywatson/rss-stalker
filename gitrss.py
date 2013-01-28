@@ -93,9 +93,12 @@ def update_feed(repo, lastUpdated, outPath):
 	if new != current:
 		f = open(outPath, 'w')
 		f.write(feed.writeString('utf-8'))
+	print 'done: %s' % datetime.time(datetime.now())
 
-oneweekago = datetime.datetime.now() - datetime.timedelta(daysToPull)
-if len(sys.argv) != 3:
-	print 'usage: gitrss repoName outPath'
-else:
-	update_feed(sys.argv[-2], oneweekago.isoformat(), sys.argv[-1])
+while True:
+	oneweekago = datetime.datetime.now() - datetime.timedelta(daysToPull)
+	if len(sys.argv) != 3:
+		print 'usage: gitrss repoName outPath'
+	else:
+		update_feed(sys.argv[-2], oneweekago.isoformat(), sys.argv[-1])
+	time.sleep(30)
