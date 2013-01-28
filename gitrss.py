@@ -23,8 +23,15 @@ def get_branches(repoName):
 def get_commits(repoName, sha, lastRunDate):
 	return [a['sha'] for a in json.loads(requests.get('%s/repos/%s/commits?access_token=%s&sha=%s&since=%s'%(baseUrl, repoName, token, sha, lastRunDate)).content)]
 
+
+commit_cache = {}
 def get_commit(repoName, sha):
-	return json.loads(requests.get('%s/repos/%s/commits/%s?access_token=%s'%(baseUrl, repoName, sha, token)).content)
+	if (repoName + sha) in commit_cache:
+		return commit_cache[repoName+sha]
+	commit = json.loads(requests.get('%s/repos/%s/commits/%s?access_token=%s'%(baseUrl, repoName, sha, token)).content)
+	time.sleep(msBetweenRequests / 1000.0)
+	commit_cache[repoName+sha] = commit
+	return commit
 
 def remove_dupes(commits):
 	shas = set()
@@ -70,7 +77,6 @@ def update_feed(repo, lastUpdated, outPath):
 			commitlist = get_commits(fork, branch[1], lastUpdated)
 			for c in commitlist:
 				commits.append(get_commit(fork, c))
-				time.sleep(msBetweenRequests / 1000.0)
 			time.sleep(msBetweenRequests / 1000.0)
 	feed = feedgenerator.DefaultFeed(**format_feed(repo))
 	commits = [a for a in commits if 'files' in a]
@@ -78,7 +84,15 @@ def update_feed(repo, lastUpdated, outPath):
 	for commit in commits:
 		feed.add_item(**format_commit(commit))
 	f = open(outPath, 'w')
-	f.write(feed.writeString('utf-8'))
+	current = ''
+	try:
+		current = open(outPath).read()
+	except:
+		pass
+	new = feed.writeString('utf-8')
+	if new != current:
+		f = open(outPath, 'w')
+		f.write(feed.writeString('utf-8'))
 
 oneweekago = datetime.datetime.now() - datetime.timedelta(daysToPull)
 if len(sys.argv) != 3:
