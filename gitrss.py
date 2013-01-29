@@ -83,7 +83,6 @@ def update_feed(repo, lastUpdated, outPath):
 	commits = remove_dupes(commits)
 	for commit in commits:
 		feed.add_item(**format_commit(commit))
-	f = open(outPath, 'w')
 	current = ''
 	try:
 		current = open(outPath).read()
